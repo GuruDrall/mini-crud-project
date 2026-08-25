@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+  <head>
+    <title>User Management</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>User Management</h1>
+        <div class="user-info">
+          <span id="usernameDisplay"></span>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <!-- Add User -->
+      <div class="form-section">
+        <input type="text" id="name" placeholder="Enter full name" required />
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter email address"
+          required
+        />
+        <button id="addBtn">+ Add User</button>
+      </div>
+
+      <!-- User List -->
+      <h2>User List</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+
+    <!-- JS -->
+    <script>
+      // Load users
+      async function loadUsers() {
+        const res = await fetch("/users");
+        const users = await res.json();
+
+        const table = document.getElementById("userTable");
+        table.innerHTML = "";
+
+        users.forEach((user) => {
+          const row = `
+          <tr>
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+          </tr>
+        `;
+          table.innerHTML += row;
+        });
+      }
+
+      // Add user
+      document.getElementById("addBtn").addEventListener("click", async () => {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+
+        if (!name || !email) {
+          alert("Both fields are required");
+          return;
+        }
+
+        const res = await fetch("/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email }),
+        });
+
+        if (res.ok) {
+          document.getElementById("name").value = "";
+          document.getElementById("email").value = "";
+          loadUsers();
+        } else {
+          alert("Error adding user");
+        }
+      });
+
+      // Logout
+      async function logout() {
+        await fetch("/logout");
+        window.location.href = "/login";
+      }
+
+      // Get logged-in username
+      async function getUser() {
+        const res = await fetch("/me");
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById("usernameDisplay").innerText =
+            "👤 " + data.username;
+        }
+      }
+
+      // Init
+      loadUsers();
+      getUser();
+    </script>
+  </body>
+</html>

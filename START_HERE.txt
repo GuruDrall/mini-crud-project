@@ -1,0 +1,77 @@
+Mini CRUD Login App - Start Guide
+
+1. Open a terminal inside the project folder.
+
+2. Start the app server:
+   node server.js
+
+3. Open MySQL in a separate terminal:
+   & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p
+
+4. Install the project dependencies if needed:
+   npm install
+
+5. Make sure MySQL is running on your computer.
+
+6. Open MySQL and run this SQL:
+
+   CREATE DATABASE crud_db;
+   USE crud_db;
+
+   CREATE TABLE users (
+     new_id VARCHAR(255) PRIMARY KEY,
+     name VARCHAR(255),
+     email VARCHAR(255)
+   );
+
+   CREATE TABLE users_login (
+     username VARCHAR(255) PRIMARY KEY,
+     password VARCHAR(255)
+   );
+
+   CREATE TABLE user_sessions (
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     username VARCHAR(255),
+     session_id VARCHAR(255),
+     expires_at DATETIME,
+     is_active TINYINT(1)
+   );
+
+5. Add at least one login user:
+
+   INSERT INTO users_login (username, password)
+   VALUES ('admin', 'admin123');
+
+7. Start the backend server:
+   node server.js
+
+   Or for automatic restart during editing:
+   npx nodemon server.js
+
+8. Wait until the terminal prints:
+   Server running on http://localhost:8000
+
+9. Open this URL in the browser:
+   http://localhost:8000/login
+
+10. Login using:
+    Username: admin
+    Password: admin123
+
+11. After login, you will be redirected to the main page.
+
+12. From there you can:
+    - add users
+    - see the user list
+    - logout using the logout button
+
+Important notes:
+- The database connection is configured in db.js.
+- If your MySQL username, password, or database name is different, update db.js first.
+- The app uses Express sessions and saves active sessions into user_sessions.
+- If the app does not open, check MySQL, database creation, and whether the server is still running.
+
+Troubleshooting:
+- If login fails: check the users_login table and the username/password values.
+- If the page does not load: confirm the server is running on port 8000.
+- If there is a database error: confirm all tables exist and column names match the queries in server.js.
